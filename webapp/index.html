@@ -85,16 +85,16 @@
     <div class="spacer"></div>
     <div class="emoji-big">🔞</div>
     <h1><span>Правда</span> или <span>Действие</span></h1>
-    <p class="center">Пикантная версия для взрослых компаний и пар.</p>
+    <p class="center">Пикантная игра только для вас двоих.</p>
     <div class="card">
-      <p>Игра содержит откровенные вопросы и задания. Продолжая, вы подтверждаете, что <b style="color:var(--text)">всем участникам исполнилось 18 лет</b> и все играют добровольно.</p>
+      <p>Игра содержит откровенные вопросы и задания. Продолжая, вы подтверждаете, что <b style="color:var(--text)">обоим игрокам исполнилось 18 лет</b> и вы играете по взаимному согласию.</p>
     </div>
     <div class="card rules">
       <h2>Правила</h2>
       <ul style="padding-left:18px;margin:6px 0 0">
         <li>Любое задание можно пропустить — без объяснений. «Нет» значит нет.</li>
         <li>Пропуск = штраф (−1 очко), выполнение = +1/+2 очка.</li>
-        <li>Что было в игре — остаётся в игре 🤫</li>
+        <li>Что было в игре — остаётся между вами 🤫</li>
       </ul>
     </div>
     <div class="spacer"></div>
@@ -105,11 +105,8 @@
   <!-- 2. Setup -->
   <section class="screen" id="s-setup">
     <h2>Кто играет?</h2>
-    <div class="row">
-      <input type="text" id="name" maxlength="20" placeholder="Имя игрока" autocomplete="off">
-      <button class="btn add" id="btn-add">+</button>
-    </div>
-    <div class="players" id="players"></div>
+    <input type="text" id="name1" maxlength="20" placeholder="Имя первого игрока" autocomplete="off" style="flex:none">
+    <input type="text" id="name2" maxlength="20" placeholder="Имя второго игрока" autocomplete="off" style="flex:none">
 
     <h2 style="margin-top:6px">Уровень</h2>
     <div class="levels" id="levels"></div>
@@ -189,18 +186,18 @@
 const LEVELS = [
   {id:1, ic:"😏", name:"Флирт",  desc:"Разогрев: лёгкие откровения и заигрывания"},
   {id:2, ic:"🌶", name:"Горячо", desc:"Смелые вопросы, поцелуи и прикосновения"},
-  {id:3, ic:"🔥", name:"Без тормозов", desc:"Максимально откровенно. Для близких компаний и пар"},
+  {id:3, ic:"🔥", name:"Без тормозов", desc:"Максимально откровенно, без стеснения"},
 ];
 
 const TASKS = {
   1: {
     truth: [
-      "Кто из присутствующих кажется тебе самым привлекательным?",
+      "Что в {p} тебя привлекло с самого первого взгляда?",
       "Какой был твой самый неловкий первый поцелуй?",
       "Что в противоположном поле тебя заводит с первого взгляда?",
       "Тебе когда-нибудь снился эротический сон про знакомого? Про кого?",
       "Какой самый смелый комплимент ты получал(а)?",
-      "С кем из присутствующих ты бы пошёл(шла) на свидание?",
+      "Опиши идеальное свидание, на которое ты хотел(а) бы пойти с {p}.",
       "Какая часть тела у тебя самая чувствительная к прикосновениям?",
       "Ты когда-нибудь флиртовал(а), чтобы чего-то добиться? Чего?",
       "Какой твой самый странный «тип» людей?",
@@ -213,7 +210,7 @@ const TASKS = {
     ],
     dare: [
       "Сделай {p} самый горячий комплимент, какой сможешь придумать.",
-      "Подмигни каждому игроку по очереди максимально соблазнительно.",
+      "Подмигни {p} три раза подряд — каждый раз соблазнительнее.",
       "Прошепчи {p} на ухо что-нибудь приятное.",
       "Изобрази свой лучший «соблазнительный взгляд» и держи 10 секунд.",
       "Станцуй 30 секунд так, будто хочешь кого-то соблазнить.",
@@ -225,8 +222,8 @@ const TASKS = {
       "Сядь на колени к {p} до своего следующего хода.",
       "Обними {p} и не отпускай 20 секунд.",
       "Покажи, как ты флиртуешь в баре. Цель — {p}.",
-      "Изобрази оргазм только голосом — 10 секунд. Публика оценивает по 10-балльной шкале.",
-      "Поставь лайк на старое фото своего бывшего/бывшей... или выпей штрафной.",
+      "Изобрази оргазм только голосом — 10 секунд. {p} оценивает по 10-балльной шкале.",
+      "Напиши {p} в Telegram самое откровенное сообщение, какое решишься, прямо сейчас.",
     ],
   },
   2: {
@@ -239,7 +236,7 @@ const TASKS = {
       "Что ты больше любишь — доминировать или подчиняться?",
       "Какой самый неловкий момент случился у тебя в интимной обстановке?",
       "Ты когда-нибудь отправлял(а) откровенные фото?",
-      "С кем из присутствующих ты бы провёл(а) ночь, если бы пришлось выбрать?",
+      "Что ты больше всего хочешь сделать с {p} этой ночью?",
       "Какую позу ты считаешь самой лучшей?",
       "Был ли у тебя секс на одну ночь? Как это было?",
       "Что бы ты хотел(а) попробовать, но стесняешься предложить?",
@@ -269,10 +266,10 @@ const TASKS = {
     truth: [
       "Расскажи свою самую грязную фантазию в деталях.",
       "Самый безумный секс в твоей жизни — где, с кем, как?",
-      "Был ли у тебя секс втроём или хотел(а) бы попробовать?",
+      "Какую свою фантазию ты хотел(а) бы воплотить именно с {p}?",
       "Что самое пошлое ты говорил(а) во время секса?",
       "Какая у тебя самая странная сексуальная привычка или фетиш?",
-      "С кем из присутствующих ты занялся(ась) бы сексом прямо сейчас?",
+      "Где бы ты хотел(а) заняться сексом с {p}, если бы можно было в любом месте мира?",
       "Пользуешься ли ты игрушками? Какими?",
       "Тебя когда-нибудь заставали во время секса?",
       "Что тебе никогда не понравится в постели, даже если попросят?",
@@ -297,8 +294,8 @@ const TASKS = {
       "Шепчи {p} пошлости на ухо 30 секунд.",
       "Прижми {p} к стене и поцелуй.",
       "Проведи губами по внутренней стороне запястья и руки {p} до локтя.",
-      "Сыграй 7 минут в раю с {p} — наедине в соседней комнате (или выпей 2 штрафных).",
-      "Позволь {p} выбрать любое задание для тебя (в пределах ваших границ).",
+      "Следующие 3 минуты {p} управляет тобой: ты делаешь всё, что попросят (в пределах ваших границ).",
+      "Позволь {p} придумать для тебя любое задание (в пределах ваших границ).",
     ],
   },
 };
@@ -329,26 +326,14 @@ $("btn-adult").onclick = () => { store.set("adult", true); haptic(); show("s-set
 $("btn-minor").onclick = () => show("s-blocked");
 
 /* ---------- Setup ---------- */
-function renderPlayers(){
-  $("players").innerHTML = S.players.length ? "" : '<p>Добавьте минимум 2 игроков</p>';
-  S.players.forEach((p,i)=>{
-    const c=document.createElement("div"); c.className="chip";
-    c.innerHTML=`<b></b><button aria-label="Удалить">✕</button>`;
-    c.querySelector("b").textContent=p.name;
-    c.querySelector("button").onclick=()=>{ S.players.splice(i,1); haptic(); renderPlayers(); };
-    $("players").appendChild(c);
-  });
-  $("btn-start").disabled = S.players.length < 2;
-  store.set("players", S.players.map(p=>p.name));
+function names(){ return [$("name1").value.trim(), $("name2").value.trim()]; }
+function syncNames(){
+  const [a,b]=names();
+  $("btn-start").disabled = !a || !b || a.toLowerCase()===b.toLowerCase();
+  store.set("names",[a,b]);
 }
-function addPlayer(){
-  const n=$("name").value.trim();
-  if(!n) return;
-  if(S.players.some(p=>p.name.toLowerCase()===n.toLowerCase())) return toast("Такое имя уже есть");
-  S.players.push({name:n, score:0, done:0, skip:0}); $("name").value=""; haptic(); renderPlayers(); $("name").focus();
-}
-$("btn-add").onclick = addPlayer;
-$("name").addEventListener("keydown", e=>{ if(e.key==="Enter") addPlayer(); });
+$("name1").oninput = $("name2").oninput = syncNames;
+$("name1").addEventListener("keydown", e=>{ if(e.key==="Enter") $("name2").focus(); });
 
 function renderLevels(){
   $("levels").innerHTML="";
@@ -362,7 +347,7 @@ function renderLevels(){
 
 $("btn-start").onclick = () => {
   S.timer=$("opt-timer").checked; S.escalate=$("opt-escalate").checked;
-  S.players.forEach(p=>{p.score=0;p.done=0;p.skip=0;});
+  S.players = names().map(n=>({name:n, score:0, done:0, skip:0}));
   S.turn=Math.floor(Math.random()*S.players.length); S.rounds=0; S.used={};
   notify(); nextTurn(false);
 };
@@ -465,10 +450,11 @@ if(tg?.BackButton) tg.BackButton.onClick(()=>{
 });
 
 /* ---------- Init ---------- */
-S.players=store.get("players",[]).map(n=>({name:n,score:0,done:0,skip:0}));
+const saved=store.get("names",["",""]);
 const tgName=tg?.initDataUnsafe?.user?.first_name;
-if(!S.players.length && tgName) S.players.push({name:tgName,score:0,done:0,skip:0});
-renderPlayers(); renderLevels();
+if(!saved[0] && tgName) saved[0]=tgName;
+$("name1").value=saved[0]||""; $("name2").value=saved[1]||"";
+syncNames(); renderLevels();
 if(store.get("adult",false)) show("s-setup");
 </script>
 </body>
