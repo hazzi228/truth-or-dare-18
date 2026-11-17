@@ -75,6 +75,65 @@
   .rules li{margin:6px 0;color:var(--muted)}
   .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#000c;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
   .toast.show{opacity:1}
+  /* ---- Мини-игры: плеер-инструкция ---- */
+  .howto{background:linear-gradient(90deg,#ffc94a,#ff8a3d);color:#2a0d1f}
+  .mg{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:#ffc94a;color:#2a0d1f;padding:4px 10px;border-radius:999px;align-self:center}
+  .modal{position:fixed;inset:0;background:#000b;display:none;align-items:flex-end;justify-content:center;z-index:8;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .modal.open{display:flex}
+  .sheet{width:100%;max-width:520px;max-height:94vh;overflow:auto;background:var(--card);border-radius:26px 26px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px;animation:kUp .35s cubic-bezier(.2,.8,.2,1)}
+  .stage{border-radius:18px;overflow:hidden;aspect-ratio:16/10;cursor:pointer;box-shadow:0 10px 40px #ff2e7e33;flex:none}
+  .stage svg{display:block;width:100%;height:100%}
+  .cap{min-height:46px;font-size:17px;font-weight:700;text-align:center;line-height:1.35}
+  .dots{display:flex;gap:6px;justify-content:center}
+  .dots i{height:4px;flex:1;max-width:44px;background:#ffffff22;border-radius:2px;overflow:hidden;position:relative}
+  .dots i.done{background:var(--accent)}
+  .dots i.on::after{content:"";position:absolute;inset:0;background:var(--accent);transform-origin:left;animation:kGrow var(--d) linear forwards}
+  .g-rules{margin:0;padding-left:20px;display:grid;gap:6px;color:var(--muted);font-size:15px;line-height:1.4}
+  .stage *{transform-box:fill-box;transform-origin:center}
+  .k-in{animation:kIn .7s cubic-bezier(.2,.8,.2,1.2) both}
+  .k-pop{animation:kPop .55s cubic-bezier(.3,1.6,.5,1) both}
+  .k-l{animation:kL .9s cubic-bezier(.2,.8,.2,1) both}
+  .k-r{animation:kR .9s cubic-bezier(.2,.8,.2,1) both}
+  .k-drop{animation:kDrop .8s cubic-bezier(.3,1.5,.5,1) both}
+  .k-float{animation:kFloat 2.6s ease-in-out infinite}
+  .k-pulse{animation:kPulse 1.1s ease-in-out infinite}
+  .k-beat{animation:kBeat 1s ease-in-out infinite;opacity:0}
+  .k-blink{animation:kBlink 3.2s infinite}
+  .k-shake{animation:kShake .25s linear infinite}
+  .k-dark{animation:kDark 2.2s ease .6s both}
+  .k-bulboff{animation:kBulb 2.2s ease .6s both}
+  .k-glowoff{animation:kGlowOff 2.2s ease .6s both}
+  .k-glow{animation:kGlow 1.6s ease-in-out infinite}
+  .k-ring{animation:kRing 3.6s linear both}
+  .k-flipdown{animation:kFlipDown 1.4s cubic-bezier(.5,0,.2,1) both}
+  .k-ripple{animation:kRipple 1.4s ease-out infinite}
+  .k-liftoff{animation:kLift 1.2s cubic-bezier(.5,0,.3,1) both}
+  .k-grow{transform-origin:left;animation:kGrow 3.2s linear both}
+  .k-cap{animation:kCap .45s ease both}
+  .d0{animation-delay:0s}.d1{animation-delay:.25s}.d2{animation-delay:.5s}.d3{animation-delay:.75s}.d4{animation-delay:1s}
+  .d5{animation-delay:1.25s}.d6{animation-delay:1.5s}.d7{animation-delay:1.75s}.d8{animation-delay:2s}
+  @keyframes kUp{from{transform:translateY(60px);opacity:0}}
+  @keyframes kIn{from{opacity:0;transform:scale(.6)}}
+  @keyframes kPop{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+  @keyframes kL{from{opacity:0;transform:translateX(-90px)}}
+  @keyframes kR{from{opacity:0;transform:translateX(90px)}}
+  @keyframes kDrop{from{opacity:0;transform:translateY(-40px)}}
+  @keyframes kFloat{50%{transform:translateY(-7px)}}
+  @keyframes kPulse{50%{transform:scale(1.15);opacity:.7}}
+  @keyframes kBeat{0%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(2.2)}}
+  @keyframes kBlink{0%,45%,49%,100%{transform:scaleY(1)}47%{transform:scaleY(.1)}}
+  @keyframes kShake{25%{transform:translate(-2px,1px) rotate(-2deg)}75%{transform:translate(2px,-1px) rotate(2deg)}}
+  @keyframes kDark{from{opacity:0}to{opacity:.72}}
+  @keyframes kBulb{to{fill:#5a4658}}
+  @keyframes kGlowOff{to{opacity:0;transform:scale(.5)}}
+  @keyframes kGlow{50%{transform:scale(1.18);opacity:.75}}
+  @keyframes kRing{from{stroke-dashoffset:0}to{stroke-dashoffset:327}}
+  @keyframes kFlipDown{0%,25%{transform:scaleY(1)}70%,100%{transform:scaleY(-1);opacity:.55}}
+  @keyframes kRipple{from{transform:scale(.8);opacity:.9}to{transform:scale(1.3);opacity:0}}
+  @keyframes kLift{to{transform:translateY(-60px) rotate(-18deg);opacity:0}}
+  @keyframes kGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes kCap{from{opacity:0;transform:translateY(8px)}}
+  @media (prefers-reduced-motion:reduce){.stage *{animation-duration:.01s!important;animation-iteration-count:1!important}}
 </style>
 </head>
 <body>
@@ -147,9 +206,11 @@
     </div>
     <div class="task" id="task">
       <div class="kind" id="task-kind"></div>
+      <span class="mg" id="task-mg" style="display:none">🎮 Мини-игра</span>
       <div class="txt" id="task-text"></div>
       <div class="timer" id="timer" style="display:none"></div>
     </div>
+    <button class="btn howto" id="btn-howto" style="display:none">🎬 Как играть</button>
     <button class="btn ghost" id="btn-timer" style="display:none">⏱ Запустить таймер</button>
     <div class="spacer"></div>
     <button class="btn" id="btn-done">✅ Выполнено</button>
@@ -178,10 +239,20 @@
   </section>
 </div>
 <div class="toast" id="toast"></div>
+<div class="modal" id="g-modal">
+  <div class="sheet">
+    <div class="top"><h2 id="g-title"></h2><button class="iconbtn" id="g-close">✕</button></div>
+    <div class="stage" id="g-stage"></div>
+    <div class="dots" id="g-dots"></div>
+    <div class="cap" id="g-cap"></div>
+    <div class="card"><h2 style="margin-bottom:8px">Правила</h2><ol class="g-rules" id="g-rules"></ol></div>
+    <button class="btn" id="g-ok">Понятно, играем!</button>
+  </div>
+</div>
 
 <script>
 /* ===================== ЗАДАНИЯ =====================
-   {p} — партнёр (случайный другой игрок).
+   {p} — имя партнёра. Падеж: {p:р} кого, {p:д} кому, {p:в} кого (вин.), {p:т} кем, {p:п} о ком.
    Добавляйте свои строки в нужные массивы. */
 const LEVELS = [
   {id:1, ic:"😏", name:"Флирт",  desc:"Разогрев: лёгкие откровения и заигрывания"},
@@ -192,12 +263,12 @@ const LEVELS = [
 const TASKS = {
   1: {
     truth: [
-      "Что в {p} тебя привлекло с самого первого взгляда?",
+      "Что в {p:п} тебя привлекло с самого первого взгляда?",
       "Какой был твой самый неловкий первый поцелуй?",
       "Что в противоположном поле тебя заводит с первого взгляда?",
       "Тебе когда-нибудь снился эротический сон про знакомого? Про кого?",
       "Какой самый смелый комплимент ты получал(а)?",
-      "Опиши идеальное свидание, на которое ты хотел(а) бы пойти с {p}.",
+      "Опиши идеальное свидание, на которое ты хотел(а) бы пойти с {p:т}.",
       "Какая часть тела у тебя самая чувствительная к прикосновениям?",
       "Ты когда-нибудь флиртовал(а), чтобы чего-то добиться? Чего?",
       "Какой твой самый странный «тип» людей?",
@@ -209,21 +280,22 @@ const TASKS = {
       "Опиши свой идеальный первый поцелуй.",
     ],
     dare: [
-      "Сделай {p} самый горячий комплимент, какой сможешь придумать.",
-      "Подмигни {p} три раза подряд — каждый раз соблазнительнее.",
-      "Прошепчи {p} на ухо что-нибудь приятное.",
+      "Сделай {p:д} самый горячий комплимент, какой сможешь придумать.",
+      "Подмигни {p:д} три раза подряд — каждый раз соблазнительнее.",
+      "Прошепчи {p:д} на ухо что-нибудь приятное.",
       "Изобрази свой лучший «соблазнительный взгляд» и держи 10 секунд.",
       "Станцуй 30 секунд так, будто хочешь кого-то соблазнить.",
-      "Поцелуй {p} в щёку.",
-      "Сделай {p} массаж плеч в течение 1 минуты.",
+      "Поцелуй {p:в} в щёку.",
+      "Сделай {p:д} массаж плеч в течение 1 минуты.",
       "Произнеси скороговорку максимально сексуальным голосом.",
       "Прочитай последнее сообщение в своём телефоне томным голосом.",
-      "Пусть {p} выберет песню — подпевай ей, глядя {p} в глаза.",
-      "Сядь на колени к {p} до своего следующего хода.",
-      "Обними {p} и не отпускай 20 секунд.",
+      "Пусть {p} выберет песню — подпевай ей, глядя {p:д} в глаза.",
+      "Сядь на колени к {p:д} до своего следующего хода.",
+      "Обними {p:в} и не отпускай 20 секунд.",
       "Покажи, как ты флиртуешь в баре. Цель — {p}.",
       "Изобрази оргазм только голосом — 10 секунд. {p} оценивает по 10-балльной шкале.",
-      "Напиши {p} в Telegram самое откровенное сообщение, какое решишься, прямо сейчас.",
+      "Напиши {p:д} в Telegram самое откровенное сообщение, какое решишься, прямо сейчас.",
+      {t:"Гляделки: сядьте лицом к лицу и смотрите друг другу в глаза 30 секунд. Кто первым засмеётся — проиграл.", g:"stare"},
     ],
   },
   2: {
@@ -236,7 +308,7 @@ const TASKS = {
       "Что ты больше любишь — доминировать или подчиняться?",
       "Какой самый неловкий момент случился у тебя в интимной обстановке?",
       "Ты когда-нибудь отправлял(а) откровенные фото?",
-      "Что ты больше всего хочешь сделать с {p} этой ночью?",
+      "Что ты больше всего хочешь сделать с {p:т} этой ночью?",
       "Какую позу ты считаешь самой лучшей?",
       "Был ли у тебя секс на одну ночь? Как это было?",
       "Что бы ты хотел(а) попробовать, но стесняешься предложить?",
@@ -245,31 +317,33 @@ const TASKS = {
       "Смотришь ли ты взрослые фильмы? Какой жанр?",
     ],
     dare: [
-      "Поцелуй {p} в шею.",
+      "Поцелуй {p:в} в шею.",
       "Сними с себя один предмет одежды (аксессуары не считаются).",
-      "Поцелуй {p} в губы — 5 секунд.",
-      "Позволь {p} оставить на тебе след от поцелуя в любом месте выше пояса.",
-      "Станцуй медленный танец с {p}, прижавшись как можно ближе.",
-      "Сделай {p} массаж спины под одеждой — 1 минута.",
+      "Поцелуй {p:в} в губы — 5 секунд.",
+      "Позволь {p:д} оставить на тебе след от поцелуя в любом месте выше пояса.",
+      "Станцуй медленный танец с {p:т}, прижавшись как можно ближе.",
+      "Сделай {p:д} массаж спины под одеждой — 1 минута.",
       "Пройдись по комнате походкой модели в нижнем белье (одетым(ой) можно 😉).",
-      "Опиши {p} на ухо, что бы ты с ним(ней) сделал(а) наедине.",
-      "Завяжи глаза — {p} поцелует тебя в любое место (кроме интимных). Угадай, куда будет следующий.",
-      "Укуси {p} за мочку уха.",
+      "Опиши {p:д} на ухо, что бы ты с ним(ней) сделал(а) наедине.",
+      {t:"Угадай поцелуй: завяжи глаза — {p} целует тебя 3 раза в разные места (кроме интимных), а ты угадываешь, куда будет следующий.", g:"blindkiss"},
+      "Укуси {p:в} за мочку уха.",
       "Покажи свою любимую позу (в одежде) с подушкой.",
-      "Проведи кубиком льда (или холодным пальцем) по шее {p}.",
-      "Слизни что-нибудь сладкое с руки {p}.",
-      "Дай {p} 30 секунд делать с тобой что угодно выше пояса.",
-      "Сделай лэп-дэнс для {p} — 30 секунд.",
+      {t:"Лёд: 30 секунд води кубиком льда по шее и ключице {p:р}. {p} не должен(на) дёргаться.", g:"ice"},
+      {t:"Корона: следующие 3 минуты {p} командует, а ты выполняешь (выше пояса, в пределах ваших границ).", g:"boss"},
+      {t:"7 минут в раю (мягкая версия): приглушите свет, таймер на 7 минут — только поцелуи и объятия.", g:"paradise"},
+      "Слизни что-нибудь сладкое с руки {p:р}.",
+      "Дай {p:д} 30 секунд делать с тобой что угодно выше пояса.",
+      "Сделай лэп-дэнс для {p:р} — 30 секунд.",
     ],
   },
   3: {
     truth: [
       "Расскажи свою самую грязную фантазию в деталях.",
       "Самый безумный секс в твоей жизни — где, с кем, как?",
-      "Какую свою фантазию ты хотел(а) бы воплотить именно с {p}?",
+      "Какую свою фантазию ты хотел(а) бы воплотить именно с {p:т}?",
       "Что самое пошлое ты говорил(а) во время секса?",
       "Какая у тебя самая странная сексуальная привычка или фетиш?",
-      "Где бы ты хотел(а) заняться сексом с {p}, если бы можно было в любом месте мира?",
+      "Где бы ты хотел(а) заняться сексом с {p:т}, если бы можно было в любом месте мира?",
       "Пользуешься ли ты игрушками? Какими?",
       "Тебя когда-нибудь заставали во время секса?",
       "Что тебе никогда не понравится в постели, даже если попросят?",
@@ -281,25 +355,46 @@ const TASKS = {
       "Как часто ты думаешь о сексе за день — честно?",
     ],
     dare: [
-      "Страстно поцелуй {p} — 15 секунд.",
-      "Сними два предмета одежды или сними один с {p} (с согласия).",
-      "Поцелуй {p} от шеи до ключицы.",
+      "Страстно поцелуй {p:в} — 15 секунд.",
+      "Сними два предмета одежды или сними один с {p:т} (с согласия).",
+      "Поцелуй {p:в} от шеи до ключицы.",
       "Пусть {p} завяжет тебе глаза и 1 минуту ласкает тебя руками (по договорённости о границах).",
-      "Покажи на {p}, как ты любишь, чтобы тебя целовали.",
-      "Стриптиз для {p} под любую песню — до границы, которая тебе комфортна.",
+      "Покажи на {p:п}, как ты любишь, чтобы тебя целовали.",
+      "Стриптиз для {p:р} под любую песню — до границы, которая тебе комфортна.",
       "Останься в нижнем белье до своего следующего хода.",
-      "Сядь верхом на {p} лицом к лицу и смотри в глаза 30 секунд, не смеясь.",
-      "Слижи взбитые сливки/мёд/шоколад с тела {p} (место выбирает {p}).",
-      "Поцелуй {p} в живот.",
-      "Шепчи {p} пошлости на ухо 30 секунд.",
-      "Прижми {p} к стене и поцелуй.",
-      "Проведи губами по внутренней стороне запястья и руки {p} до локтя.",
-      "Следующие 3 минуты {p} управляет тобой: ты делаешь всё, что попросят (в пределах ваших границ).",
-      "Позволь {p} придумать для тебя любое задание (в пределах ваших границ).",
+      {t:"Гляделки верхом: сядь на {p:в} лицом к лицу и смотри в глаза 30 секунд. Кто засмеётся — проиграл.", g:"stare"},
+      "Слижи взбитые сливки/мёд/шоколад с тела {p:р} (место выбирает {p}).",
+      "Поцелуй {p:в} в живот.",
+      "Шепчи {p:д} пошлости на ухо 30 секунд.",
+      "Прижми {p:в} к стене и поцелуй.",
+      "Проведи губами по внутренней стороне запястья и руки {p:р} до локтя.",
+      {t:"Корона без тормозов: следующие 3 минуты {p} управляет тобой — ты делаешь всё, что попросят (в пределах ваших границ).", g:"boss"},
+      {t:"7 минут в раю: выключите свет, поставьте таймер на 7 минут и делайте всё, что захочется вам обоим.", g:"paradise"},
+      "Позволь {p:д} придумать для тебя любое задание (в пределах ваших границ).",
     ],
   },
 };
 /* =================================================== */
+
+/* ---------- Склонение имён ---------- */
+const FEM_SOFT=["нинель","адель","ассоль","рахиль","изабель","жизель","эсфирь","юдифь","любовь"];
+function decline(name, c){
+  if(!c || !/^[А-Яа-яЁё]+$/.test(name)) return name;
+  const low=name.toLowerCase(), last=low.slice(-1), prev=low.slice(-2,-1), st=name.slice(0,-1);
+  const hush="жшщчц";
+  if(low.endsWith("ия")) return st+{р:"и",д:"и",в:"ю",т:"ей",п:"и"}[c];
+  if(last==="а") return st+{р:"гкхжшщч".includes(prev)?"и":"ы",д:"е",в:"у",т:hush.includes(prev)?"ей":"ой",п:"е"}[c];
+  if(last==="я") return st+{р:"и",д:"е",в:"ю",т:prev==="ь"?"ёй":"ей",п:"е"}[c];
+  if(last==="й") return st+{р:"я",д:"ю",в:"я",т:"ем",п:low.endsWith("ий")?"и":"е"}[c];
+  if(last==="ь"){
+    if(low==="любовь") return {р:"Любви",д:"Любви",в:"Любовь",т:"Любовью",п:"Любви"}[c];
+    if(FEM_SOFT.includes(low)) return st+{р:"и",д:"и",в:"ь",т:"ью",п:"и"}[c];
+    return st+{р:"я",д:"ю",в:"я",т:"ем",п:"е"}[c];
+  }
+  if("бвгджзклмнпрстфхцчшщ".includes(last)) return name+{р:"а",д:"у",в:"а",т:hush.includes(last)?"ем":"ом",п:"е"}[c];
+  return name; // несклоняемые: Арно, Кэти, латиница
+}
+const fillName=(t,name)=>t.replace(/\{p(?::([рдвтп]))?\}/g,(_,c)=>decline(name,c));
 
 const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); try{tg.setHeaderColor("#140a14");tg.setBackgroundColor("#140a14");}catch(e){} }
@@ -378,7 +473,8 @@ function pickTask(kind){
   const me=S.players[S.turn];
   const others=S.players.filter(p=>p!==me);
   const partner=others[Math.floor(Math.random()*others.length)].name;
-  return { kind, lvl, text:list[i].replaceAll("{p}", partner) };
+  const it=typeof list[i]==="string"?{t:list[i]}:list[i];
+  return { kind, lvl, partner, g:it.g, text:fillName(it.t, partner) };
 }
 
 function openTask(kind){
@@ -391,6 +487,8 @@ function openTask(kind){
   $("task-who").textContent=S.players[S.turn].name;
   $("task-lvl").textContent=lvlName(S.cur.lvl);
   $("timer").style.display="none";
+  $("btn-howto").style.display=S.cur.g?"block":"none";
+  $("task-mg").style.display=S.cur.g?"inline-block":"none";
   $("btn-timer").style.display=(kind==="dare"&&S.timer)?"block":"none";
   haptic("medium");
   show("s-task");
@@ -413,7 +511,7 @@ $("btn-skip").onclick=()=>{
 };
 
 /* ---------- Timer ---------- */
-function stopTimer(){ clearInterval(S.timerId); S.timerId=null; }
+function stopTimer(){ clearInterval(S.timerId); S.timerId=null; if(GP.id) closeGame(); }
 $("btn-timer").onclick=()=>{
   stopTimer();
   const m=S.cur.text.match(/(\d+)\s*(секунд|сек|минут)/i);
@@ -442,12 +540,140 @@ $("btn-back").onclick=()=>show(backTo);
 $("btn-restart").onclick=()=>{ stopTimer(); show("s-setup"); };
 
 if(tg?.BackButton) tg.BackButton.onClick(()=>{
+  if(GP.id) return closeGame();
   const active=document.querySelector(".screen.active").id;
   stopTimer();
   if(active==="s-task") show("s-choose");
   else if(active==="s-scores") show(backTo);
   else if(active==="s-choose") show("s-setup");
 });
+
+/* ---------- Мини-игры: анимированные инструкции ---------- */
+const CA="#ff4f93", CB="#8b6bff", INK="#1a0a18";
+const at=(x,y,inner,cls="")=>`<g transform="translate(${x} ${y})"><g class="${cls}">${inner}</g></g>`;
+const HEART='<path d="M0 10 C-18 -3 -15 -20 0 -11 C15 -20 18 -3 0 10z" fill="#ff2e7e"/>';
+const LIPS='<path d="M-11 0 Q-5 -8 0 -3 Q5 -8 11 0 Q5 9 0 7 Q-5 9 -11 0z" fill="#ff2e7e"/><path d="M-11 0 Q0 3 11 0" stroke="#a3124f" stroke-width="1.5" fill="none"/>';
+const CROWN='<path d="M-17 0 l-4 -20 l11 9 l10 -16 l10 16 l11 -9 l-4 20z" fill="#ffc94a" stroke="#e09a1a" stroke-width="2" stroke-linejoin="round"/>';
+function av(x,y,c,o={}){
+  const mouth=o.smile?'<path d="M-10 7 Q0 19 10 7" stroke="'+INK+'" stroke-width="3" fill="none" stroke-linecap="round"/>'
+                     :'<path d="M-6 10 Q0 14 6 10" stroke="'+INK+'" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
+  return at(x,y,`
+    <rect x="-30" y="30" width="60" height="70" rx="28" fill="${c}" opacity=".85"/>
+    <circle r="27" fill="${c}"/>
+    <circle cx="-14" cy="6" r="4" fill="#fff" opacity=".25"/><circle cx="14" cy="6" r="4" fill="#fff" opacity=".25"/>
+    <g class="k-blink"><circle cx="-9" cy="-4" r="3.4" fill="${INK}"/><circle cx="9" cy="-4" r="3.4" fill="${INK}"/></g>
+    ${mouth}
+    ${o.blind?'<g class="k-drop d2"><rect x="-31" y="-12" width="62" height="14" rx="7" fill="#151015"/><path d="M29 -6 l15 5 l-13 6z" fill="#151015"/></g>':''}
+    ${o.crown?at(0,-26,CROWN,"k-drop d1"):''}`, o.cls??"k-in");
+}
+const bar=(dur=3.2)=>`<rect x="60" y="184" width="200" height="6" rx="3" fill="#ffffff1f"/><rect x="60" y="184" width="200" height="6" rx="3" fill="#ff2e7e" class="k-grow" style="animation-duration:${dur}s"/>`;
+const txt=(x,y,t,size=16,fill="#fff",cls="k-pop")=>at(x,y,`<text text-anchor="middle" dominant-baseline="middle" font-size="${size}" font-weight="800" fill="${fill}">${t}</text>`,cls);
+const bubble=(x,y,t,cls)=>at(x,y,`<rect x="-46" y="-15" width="92" height="30" rx="15" fill="#fff"/><path d="M-30 12 l-10 12 l18 -10z" fill="#fff"/><text text-anchor="middle" dominant-baseline="middle" font-size="13" font-weight="800" fill="${INK}">${t}</text>`,cls);
+const BULB=(on)=>`<g class="${on?'k-glow':'k-glowoff'}"><circle r="46" fill="#ffd36e" opacity=".22"/><circle r="30" fill="#ffd36e" opacity=".25"/></g>
+  <path d="M-17 6 a23 23 0 1 1 34 0 q-6 6 -6 14 h-22 q0 -8 -6 -14z" fill="#ffd36e" class="${on?'':'k-bulboff'}"/>
+  <rect x="-11" y="22" width="22" height="6" rx="2" fill="#c9b8c4"/><rect x="-9" y="29" width="18" height="6" rx="2" fill="#a898a4"/>`;
+const sparks=()=>[[40,40,0],[280,50,1],[60,160,2],[270,150,3],[150,24,4]].map(([x,y,d])=>at(x,y,'<circle r="2" fill="#fff" opacity=".5"/>',"k-float d"+d)).join("");
+
+const GAMES={
+  paradise:{ title:"7 минут в раю",
+    rules:["Приглушите свет: выключите лампу или оставьте одну свечу.",
+           "Поставьте таймер на 7 минут, телефоны положите экраном вниз.",
+           "Пока идёт таймер, вы вдвоём делаете всё, чего хочется обоим. Говорить не обязательно.",
+           "Стоп-слово «пауза» сразу останавливает всё, без обид.",
+           "Звенит таймер: включайте свет и продолжайте игру."],
+    scenes:[
+      {c:"Приглушите свет: лампа или одна свеча", s:()=>at(160,82,BULB(false))+'<rect width="320" height="200" fill="#000" class="k-dark"/>'},
+      {c:"Таймер на 7 минут, телефоны экраном вниз", s:()=>`
+        ${at(120,100,`<circle r="52" fill="none" stroke="#ffffff1f" stroke-width="8"/>
+          <circle r="52" fill="none" stroke="#ff2e7e" stroke-width="8" stroke-linecap="round" stroke-dasharray="327" class="k-ring" transform="rotate(-90)"/>
+          <text text-anchor="middle" dominant-baseline="middle" font-size="26" font-weight="800" fill="#fff">7:00</text>`,"k-in")}
+        ${at(232,100,`<rect x="-20" y="-36" width="40" height="72" rx="8" fill="#2a2030" stroke="#8a7090" stroke-width="2"/><rect x="-15" y="-29" width="30" height="52" rx="3" fill="#6c4dff"/>`,"k-flipdown d2")}`},
+      {c:"Садитесь ближе. Всё — только по обоюдному желанию", s:()=>av(112,70,CA,{cls:"k-l"})+av(208,70,CB,{cls:"k-r"})+at(160,58,HEART,"k-pop d4")+at(160,58,HEART,"k-beat d5")},
+      {c:"Стоп-слово «пауза» сразу всё останавливает", s:()=>`
+        ${at(160,88,`<path d="M-24 -58 h48 l34 34 v48 l-34 34 h-48 l-34 -34 v-48z" fill="#ff2e7e" stroke="#fff" stroke-width="4"/>
+          <text text-anchor="middle" dominant-baseline="middle" font-size="22" font-weight="900" fill="#fff">ПАУЗА</text>`,"k-pop")}
+        ${at(160,88,'<circle r="78" fill="none" stroke="#ff2e7e" stroke-width="3"/>',"k-ripple d2")}`},
+      {c:"Таймер звенит — включайте свет, игра продолжается", s:()=>at(130,82,BULB(true),"k-in")+at(220,90,'<circle r="26" fill="#2ecc8f"/><path d="M-11 0 l7 8 l14 -15" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',"k-pop d2")},
+    ]},
+  blindkiss:{ title:"Угадай поцелуй",
+    rules:["Завяжи глаза: шарфом, маской для сна или просто зажмурься.",
+           "{p} целует тебя в одно место: шея, плечо, рука, щека, запястье (интимные зоны не трогаем).",
+           "Перед каждым поцелуем угадай вслух, куда он будет.",
+           "Всего 3 поцелуя. Угадал(а) хотя бы раз — получаешь +1 очко сверху."],
+    scenes:[
+      {c:"Завяжи глаза: шарф, маска или зажмурься", s:()=>av(160,62,CA,{blind:true})},
+      {c:"{p} целует тебя: шея, плечо, щека, рука…", s:()=>av(160,62,CA,{blind:true,cls:""})+at(186,104,LIPS,"k-pop d2")+at(130,70,LIPS,"k-pop d5")+at(160,150,LIPS,"k-pop d8")},
+      {c:"Перед каждым поцелуем угадай вслух, куда он будет", s:()=>av(160,62,CA,{blind:true,cls:""})+
+        [[104,40,0],[218,46,2],[110,128,4],[214,132,6]].map(([x,y,d])=>at(x,y,'<text text-anchor="middle" dominant-baseline="middle" font-size="26" font-weight="900" fill="#ffc94a">?</text>',"k-pop d"+d)).join("")},
+      {c:"3 поцелуя. Хоть раз угадал(а) — +1 очко", s:()=>[0,1,2].map(i=>at(110+i*50,80,HEART,"k-pop d"+(i*2))).join("")+txt(160,145,"+1 очко",26,"#2ecc8f","k-pop d7")},
+    ]},
+  stare:{ title:"Гляделки",
+    rules:["Сядьте лицом к лицу, совсем близко.",
+           "Смотрите друг другу в глаза 30 секунд. Можно корчить рожи, но трогать нельзя.",
+           "Кто засмеялся, моргнул слишком долго или отвёл взгляд — проиграл.",
+           "Победитель загадывает проигравшему маленькое желание."],
+    scenes:[
+      {c:"Сядьте лицом к лицу, совсем близко", s:()=>av(110,66,CA,{cls:"k-l"})+av(210,66,CB,{cls:"k-r"})},
+      {c:"30 секунд смотрите друг другу в глаза", s:()=>av(110,66,CA,{cls:""})+av(210,66,CB,{cls:""})+
+        at(160,62,'<path d="M-40 0 H40" stroke="#ffc94a" stroke-width="3" stroke-dasharray="4 6"/>',"k-pulse")+bar(3.4)},
+      {c:"Засмеялся или отвёл взгляд — проиграл", s:()=>av(110,66,CA,{smile:true,cls:"k-shake"})+av(210,66,CB,{cls:""})+txt(74,28,"ха!",18,"#ffc94a","k-pop d1")+txt(140,22,"ха-ха",15,"#ffc94a","k-pop d3")},
+      {c:"Победитель загадывает желание", s:()=>av(110,66,CA,{cls:""})+av(210,66,CB,{crown:true,cls:""})+bubble(250,22,"✨ желание","k-pop d4")},
+    ]},
+  boss:{ title:"Корона",
+    rules:["{p} «надевает корону» на 3 минуты (таймер в игре).",
+           "{p} отдаёт команды: «поцелуй», «обними», «замри», «сними…», «шепни…».",
+           "Ты выполняешь. Но любое твоё «нет» — это нет, и команда просто меняется.",
+           "Время вышло — корона снимается, ход переходит дальше."],
+    scenes:[
+      {c:"{p} надевает корону на 3 минуты", s:()=>av(160,66,CB,{crown:true})},
+      {c:"…и отдаёт команды", s:()=>av(90,66,CB,{crown:true,cls:""})+bubble(210,40,"поцелуй","k-pop d1")+bubble(236,92,"обними","k-pop d4")+bubble(206,144,"замри!","k-pop d7")},
+      {c:"Ты выполняешь, но твоё «нет» — это нет", s:()=>av(110,66,CA,{cls:""})+bubble(214,50,"нет 🙅","k-pop d1")+at(214,128,'<circle r="24" fill="#2ecc8f"/><path d="M-10 0 l7 8 l13 -15" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',"k-pop d4")+txt(214,170,"уважаем",14,"#2ecc8f","k-pop d5")},
+      {c:"Время вышло — корона снимается", s:()=>av(160,66,CB,{cls:""})+at(160,40,CROWN,"k-liftoff d3")+bar(2.6)},
+    ]},
+  ice:{ title:"Лёд",
+    rules:["Возьми кубик льда (или подержи пальцы в холодной воде).",
+           "Медленно веди им по шее, ключице и плечу {p:р} — 30 секунд.",
+           "{p} должен(на) не дёргаться и не смеяться. Не выдержал(а) — ещё 10 секунд.",
+           "Капли можно собрать губами 😉"],
+    scenes:[
+      {c:"Возьми кубик льда", s:()=>at(160,96,`<rect x="-30" y="-30" width="60" height="60" rx="12" fill="#bfe9ff" opacity=".85" stroke="#fff" stroke-width="2"/><path d="M-18 -18 h18" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".8"/>`,"k-in")+sparks()+
+        [[118,62,1],[204,70,3],[196,136,5]].map(([x,y,d])=>at(x,y,'<path d="M0 -8 L2 -2 L8 0 L2 2 L0 8 L-2 2 L-8 0 L-2 -2z" fill="#fff"/>',"k-pop d"+d)).join("")},
+      {c:"Медленно веди по шее, ключице и плечу {p:р}", s:()=>av(150,60,CB,{cls:""})+
+        '<path id="icep" d="M164 86 Q170 100 186 102 Q204 104 214 116" stroke="#bfe9ff" stroke-width="3" fill="none" stroke-dasharray="3 6" opacity=".7"/>'+
+        '<g><rect x="-9" y="-9" width="18" height="18" rx="4" fill="#bfe9ff" stroke="#fff" stroke-width="1.5"/><animateMotion dur="2.6s" repeatCount="indefinite"><mpath href="#icep"/></animateMotion></g>'},
+      {c:"{p} не дёргается 30 секунд", s:()=>av(160,62,CB,{cls:"k-shake"})+
+        [[118,40],[202,40],[112,92],[208,92]].map(([x,y],i)=>at(x,y,`<path d="M0 -8 q${x<160?-6:6} 8 0 16" stroke="#bfe9ff" stroke-width="2.5" fill="none" stroke-linecap="round"/>`,"k-pulse d"+i)).join("")+bar(3.4)},
+    ]},
+};
+
+const BG=`<defs><radialGradient id="kbg" cx="50%" cy="25%" r="85%"><stop offset="0" stop-color="#40123a"/><stop offset="1" stop-color="#110610"/></radialGradient></defs><rect width="320" height="200" fill="url(#kbg)"/>`;
+const GP={id:null,i:0,t:null,name:""};
+const SCENE_MS=3800;
+function openGame(id){
+  const g=GAMES[id]; if(!g) return;
+  GP.id=id; GP.name=S.cur?.partner||"";
+  $("g-title").textContent="🎬 "+g.title;
+  $("g-rules").innerHTML="";
+  g.rules.forEach(r=>{ const li=document.createElement("li"); li.textContent=fillName(r,GP.name); $("g-rules").appendChild(li); });
+  $("g-dots").innerHTML=g.scenes.map(()=>"<i></i>").join("");
+  $("g-modal").classList.add("open"); haptic("medium");
+  playScene(0);
+}
+function playScene(i){
+  clearTimeout(GP.t);
+  const g=GAMES[GP.id], n=g.scenes.length; GP.i=i;
+  $("g-stage").innerHTML=`<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" font-family="inherit">${BG}${sparks()}${g.scenes[i].s()}</svg>`;
+  const cap=$("g-cap"); cap.textContent=fillName(g.scenes[i].c,GP.name); cap.classList.remove("k-cap"); void cap.offsetWidth; cap.classList.add("k-cap");
+  [...$("g-dots").children].forEach((d,j)=>{ d.className=j<i?"done":""; if(j===i){ void d.offsetWidth; d.className="on"; d.style.setProperty("--d",SCENE_MS+"ms"); } });
+  GP.t=setTimeout(()=>playScene((i+1)%n), SCENE_MS);
+}
+function closeGame(){ clearTimeout(GP.t); GP.id=null; $("g-modal").classList.remove("open"); }
+$("g-stage").onclick=()=>{ haptic(); playScene((GP.i+1)%GAMES[GP.id].scenes.length); };
+$("g-close").onclick=closeGame;
+$("g-modal").onclick=e=>{ if(e.target.id==="g-modal") closeGame(); };
+$("btn-howto").onclick=()=>openGame(S.cur?.g);
+
+$("g-ok").onclick=closeGame;
 
 /* ---------- Init ---------- */
 const saved=store.get("names",["",""]);
