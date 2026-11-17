@@ -20,6 +20,15 @@ from aiogram.types import (
     WebAppInfo,
 )
 
+# Подхватываем настройки из bot/.env (файл не попадает в git)
+_env = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+if os.path.exists(_env):
+    with open(_env, encoding="utf-8") as f:
+        for line in f:
+            if "=" in line and not line.lstrip().startswith("#"):
+                k, v = line.strip().split("=", 1)
+                os.environ.setdefault(k, v)
+
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 WEBAPP_URL = os.environ["WEBAPP_URL"]  # обязательно https://
 
