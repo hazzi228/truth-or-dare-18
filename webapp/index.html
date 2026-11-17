@@ -75,6 +75,30 @@
   .rules li{margin:6px 0;color:var(--muted)}
   .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#000c;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
   .toast.show{opacity:1}
+  /* ---- Табло ---- */
+  .hud{display:none;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;background:var(--card);border:1px solid #3a1a34;border-radius:18px;padding:6px;margin-bottom:14px;position:sticky;top:8px;z-index:5;box-shadow:0 8px 24px #0006}
+  .hud.on{display:grid}
+  .hp{display:flex;flex-direction:column;padding:6px 10px;border-radius:13px;transition:background .25s,box-shadow .25s;min-width:0}
+  .hp.r{text-align:right}
+  .hp .hn{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+  .hp .hs{font-size:26px;font-weight:900;line-height:1.1;font-variant-numeric:tabular-nums}
+  .hp.act{background:#3a1433;box-shadow:inset 0 0 0 2px var(--accent)}
+  .hp.act .hn{color:var(--text)}
+  .hs.bump{animation:bump .6s ease}
+  @keyframes bump{35%{color:var(--accent2);text-shadow:0 0 14px var(--accent2)}}
+  .ht{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;padding:0 4px;text-align:center}
+  .ht.low{color:var(--accent2);animation:kPulse 1s ease-in-out infinite}
+  .ht small{display:block;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+  .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .seg button{background:var(--card2);border:2px solid transparent;color:var(--text);border-radius:14px;padding:12px 0;font-size:15px;font-weight:700;cursor:pointer}
+  .seg button.sel{border-color:var(--accent);background:#3a1433}
+  .final-score{font-size:46px;font-weight:900;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:.04em}
+  .wish{background:linear-gradient(150deg,#5a1440,#2a0d26);border:1px solid #ff2e7e55;text-align:center;display:grid;gap:8px}
+  .wish h2{font-size:20px}
+  #f-idea{color:var(--text);font-weight:600;min-height:0}
+  .confetti{position:fixed;top:-20px;font-size:22px;pointer-events:none;z-index:9;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.2}}
+
   /* ---- Мини-игры: плеер-инструкция ---- */
   .howto{background:linear-gradient(90deg,#ffc94a,#ff8a3d);color:#2a0d1f}
   .mg{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:#ffc94a;color:#2a0d1f;padding:4px 10px;border-radius:999px;align-self:center}
@@ -138,6 +162,11 @@
 </head>
 <body>
 <div id="app">
+  <div class="hud" id="hud">
+    <div class="hp" id="hp0"><b class="hn"></b><span class="hs">0</span></div>
+    <div class="ht" id="hud-time">20:00<small>осталось</small></div>
+    <div class="hp r" id="hp1"><b class="hn"></b><span class="hs">0</span></div>
+  </div>
 
   <!-- 1. Age gate -->
   <section class="screen active" id="s-age">
@@ -152,7 +181,8 @@
       <h2>Правила</h2>
       <ul style="padding-left:18px;margin:6px 0 0">
         <li>Любое задание можно пропустить — без объяснений. «Нет» значит нет.</li>
-        <li>Пропуск = штраф (−1 очко), выполнение = +1/+2 очка.</li>
+        <li>Правда = +1 очко, действие = +2, пропуск = −1.</li>
+        <li>Игра длится до 20 минут. У кого больше очков — загадывает желание другому 👑</li>
         <li>Что было в игре — остаётся между вами 🤫</li>
       </ul>
     </div>
@@ -170,10 +200,15 @@
     <h2 style="margin-top:6px">Уровень</h2>
     <div class="levels" id="levels"></div>
 
+    <h2 style="margin-top:6px">Длительность</h2>
+    <div class="seg" id="dur">
+      <button data-m="10">10 мин</button><button data-m="15">15 мин</button><button data-m="20">20 мин</button>
+    </div>
+
     <div class="card" style="display:grid;gap:12px">
       <label class="toggle">Таймер на действия
         <span class="switch"><input type="checkbox" id="opt-timer" checked><span></span></span></label>
-      <label class="toggle">Нарастание жара (уровень растёт по ходу игры)
+      <label class="toggle">Нарастание жара (уровень растёт со временем)
         <span class="switch"><input type="checkbox" id="opt-escalate"><span></span></span></label>
     </div>
     <div class="spacer"></div>
@@ -184,7 +219,7 @@
   <section class="screen" id="s-choose">
     <div class="top">
       <span class="badge" id="lvl-badge"></span>
-      <button class="iconbtn" id="btn-scores">🏆 Счёт</button>
+      <button class="iconbtn" id="btn-finish">🏁 Закончить</button>
     </div>
     <div class="spacer"></div>
     <div class="turn">
@@ -220,13 +255,20 @@
     </div>
   </section>
 
-  <!-- 5. Scores -->
-  <section class="screen" id="s-scores">
-    <h2>🏆 Счёт</h2>
+  <!-- 5. Final -->
+  <section class="screen" id="s-final">
+    <div class="emoji-big" id="f-emoji">🏆</div>
+    <h1 id="f-title"></h1>
+    <div class="final-score" id="f-score"></div>
     <div class="scores" id="scores"></div>
+    <div class="card wish">
+      <h2 id="f-wish-h"></h2>
+      <p id="f-wish"></p>
+      <p id="f-idea" style="display:none"></p>
+    </div>
+    <button class="btn ghost" id="btn-idea">🎲 Подсказать идею желания</button>
     <div class="spacer"></div>
-    <button class="btn" id="btn-back">Продолжить игру</button>
-    <button class="btn ghost" id="btn-restart">Новая игра</button>
+    <button class="btn" id="btn-restart">Сыграть ещё</button>
   </section>
 
   <!-- 6. Blocked -->
@@ -402,7 +444,8 @@ const haptic = (t="light") => { try{ tg?.HapticFeedback?.impactOccurred(t);}catc
 const notify = (t="success") => { try{ tg?.HapticFeedback?.notificationOccurred(t);}catch(e){} };
 const $ = id => document.getElementById(id);
 
-const S = { players:[], level:1, timer:true, escalate:false, turn:0, rounds:0, used:{}, cur:null, timerId:null };
+const S = { players:[], level:1, minutes:20, timer:true, escalate:false, turn:0, rounds:0, used:{}, cur:null, timerId:null,
+            startAt:0, endAt:0, clock:null, timeUp:false, warned:false, lastLvl:0 };
 const store = {
   get(k,d){ try{ const v=localStorage.getItem("tod18_"+k); return v?JSON.parse(v):d; }catch(e){ return d; } },
   set(k,v){ try{ localStorage.setItem("tod18_"+k, JSON.stringify(v)); }catch(e){} },
@@ -411,6 +454,7 @@ const store = {
 function show(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   $(id).classList.add("active");
+  $("hud").classList.toggle("on", id==="s-choose"||id==="s-task");
   if (tg?.BackButton){ (id==="s-age"||id==="s-blocked"||id==="s-setup") ? tg.BackButton.hide() : tg.BackButton.show(); }
   window.scrollTo(0,0);
 }
@@ -440,26 +484,61 @@ function renderLevels(){
   });
 }
 
+function renderDur(){ [...$("dur").children].forEach(b=>b.classList.toggle("sel", +b.dataset.m===S.minutes)); }
+[...$("dur").children].forEach(b=>b.onclick=()=>{ S.minutes=+b.dataset.m; store.set("minutes",S.minutes); haptic(); renderDur(); });
+
 $("btn-start").onclick = () => {
   S.timer=$("opt-timer").checked; S.escalate=$("opt-escalate").checked;
   S.players = names().map(n=>({name:n, score:0, done:0, skip:0}));
   S.turn=Math.floor(Math.random()*S.players.length); S.rounds=0; S.used={};
-  notify(); nextTurn(false);
+  S.startAt=Date.now(); S.endAt=S.startAt+S.minutes*60000; S.timeUp=false; S.warned=false; S.lastLvl=0;
+  startClock(); notify(); nextTurn(false);
 };
+
+/* ---------- Время партии ---------- */
+function startClock(){ clearInterval(S.clock); S.clock=setInterval(tickClock,1000); tickClock(); }
+function tickClock(){
+  const left=Math.max(0,S.endAt-Date.now()), sec=Math.ceil(left/1000);
+  const el=$("hud-time");
+  el.innerHTML=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,"0")}<small>${S.timeUp?"финал":"осталось"}</small>`;
+  el.classList.toggle("low", sec<=120);
+  if(sec<=120 && !S.warned){ S.warned=true; toast("⏳ Осталось 2 минуты"); notify("warning"); }
+  if(left<=0 && !S.timeUp){
+    S.timeUp=true; notify("warning");
+    const onChoose=$("s-choose").classList.contains("active");
+    if(onChoose && S.rounds%2===0) return finishGame();
+    toast(onChoose ? "⏰ Время! Последний ход" : "⏰ Время! Доиграйте задание");
+    if(onChoose) $("round").textContent="⚡ Последний ход";
+  }
+}
 
 /* ---------- Game ---------- */
 function curLevel(){
   if(!S.escalate) return S.level;
-  const r=Math.floor(S.rounds / Math.max(1,S.players.length)); // полных кругов
-  return Math.min(3, S.level + Math.floor(r/2));               // +1 уровень каждые 2 круга
+  const f=Math.min(.999,(Date.now()-S.startAt)/(S.endAt-S.startAt)); // доля прошедшего времени
+  return Math.min(3, S.level + Math.floor(f*(4-S.level)));            // жар растёт равными отрезками
+}
+function renderHud(bump=-1){
+  S.players.forEach((p,i)=>{
+    const el=$("hp"+i), sc=el.querySelector(".hs");
+    el.querySelector(".hn").textContent=p.name; sc.textContent=p.score;
+    el.classList.toggle("act", i===S.turn);
+    if(i===bump){ sc.classList.remove("bump"); void sc.offsetWidth; sc.classList.add("bump"); }
+  });
 }
 function lvlName(id){ const l=LEVELS.find(x=>x.id===id); return l.ic+" "+l.name; }
 
 function nextTurn(advance=true){
   if(advance){ S.turn=(S.turn+1)%S.players.length; S.rounds++; }
+  // время вышло: заканчиваем, когда у обоих поровну ходов
+  if(S.timeUp && S.rounds%2===0) return finishGame();
+  const lvl=curLevel();
+  if(S.lastLvl && lvl>S.lastLvl){ toast("🔥 Жарче! Теперь: "+lvlName(lvl)); notify("success"); }
+  S.lastLvl=lvl;
   $("who").textContent=S.players[S.turn].name;
-  $("round").textContent=`Круг ${Math.floor(S.rounds/S.players.length)+1}`;
-  $("lvl-badge").textContent=lvlName(curLevel());
+  $("round").textContent=S.timeUp ? "⚡ Последний ход" : `Круг ${Math.floor(S.rounds/2)+1}`;
+  $("lvl-badge").textContent=lvlName(lvl);
+  renderHud();
   show("s-choose");
 }
 
@@ -502,12 +581,12 @@ $("btn-done").onclick=()=>{
   stopTimer();
   const p=S.players[S.turn]; const pts=S.cur.kind==="dare"?2:1;
   p.score+=pts; p.done++; notify("success"); toast(`+${pts} ${p.name}`);
-  nextTurn();
+  renderHud(S.turn); nextTurn();
 };
 $("btn-skip").onclick=()=>{
   stopTimer();
   const p=S.players[S.turn]; p.score-=1; p.skip++; notify("warning"); toast(`−1 ${p.name}`);
-  nextTurn();
+  renderHud(S.turn); nextTurn();
 };
 
 /* ---------- Timer ---------- */
@@ -523,8 +602,60 @@ $("btn-timer").onclick=()=>{
     if(sec<=0){ stopTimer(); el.textContent="⏰ Время!"; notify("warning"); } },1000);
 };
 
-/* ---------- Scores ---------- */
-let backTo="s-choose";
+/* ---------- Финал ---------- */
+const WISHES=[
+  "Массаж всего тела — 15 минут, без спешки.",
+  "Свидание, которое целиком планирует победитель.",
+  "Приватный танец только для победителя.",
+  "Вечер, когда победитель решает всё (в пределах ваших границ).",
+  "5 минут поцелуев там, где скажет победитель.",
+  "Совместная ванна или душ.",
+  "Повторить любое задание из сегодняшней игры — по выбору победителя.",
+  "Завтрак в постель.",
+  "Неделю будить победителя поцелуем.",
+  "Попробовать то, о чём победитель давно мечтает (если оба согласны).",
+  "Весь вечер выполнять маленькие просьбы победителя.",
+  "Наряд или образ, который выберет победитель — только для вас двоих.",
+];
+function finishGame(){
+  stopTimer(); clearInterval(S.clock); S.timeUp=true;
+  const [a,b]=S.players;
+  const w = a.score===b.score ? null : (a.score>b.score ? a : b);
+  const l = w ? (w===a ? b : a) : null;
+  renderScores();
+  $("f-score").textContent=`${a.score} : ${b.score}`;
+  $("f-idea").style.display="none";
+  if(w){
+    $("f-emoji").textContent="🏆";
+    $("f-title").textContent=`${w.name} побеждает!`;
+    $("f-wish-h").textContent=`👑 ${w.name} загадывает желание ${decline(l.name,"д")}`;
+    $("f-wish").textContent=`${l.name} выполняет одно желание — сейчас или «в долг» на потом. Только то, на что вы оба согласны.`;
+  } else {
+    $("f-emoji").textContent="🤝";
+    $("f-title").textContent="Ничья!";
+    $("f-wish-h").textContent="Желание загадывают оба";
+    $("f-wish").textContent="Каждый загадывает по желанию другому. Или решите спор гляделками: кто победит — тот и загадывает.";
+  }
+  notify("success"); show("s-final"); confetti();
+}
+function confetti(){
+  const em=["🎉","❤️","🔥","💋","✨","👑"];
+  for(let i=0;i<26;i++){
+    const c=document.createElement("div"); c.className="confetti";
+    c.textContent=em[i%em.length]; c.style.left=Math.random()*100+"vw";
+    c.style.animationDuration=(2+Math.random()*2)+"s"; c.style.animationDelay=Math.random()*.8+"s";
+    document.body.appendChild(c); setTimeout(()=>c.remove(),5000);
+  }
+}
+$("btn-idea").onclick=()=>{
+  const el=$("f-idea"); let t; do{ t=WISHES[Math.floor(Math.random()*WISHES.length)]; }while(t===el.textContent && WISHES.length>1);
+  el.textContent="💡 "+t; el.style.display="block"; haptic();
+};
+$("btn-finish").onclick=()=>{
+  const go=ok=>{ if(ok) finishGame(); };
+  try{ if(tg?.showConfirm && tg.isVersionAtLeast?.("6.2")) return tg.showConfirm("Закончить игру и подвести итоги?", go); }catch(e){}
+  go(confirm("Закончить игру и подвести итоги?"));
+};
 function renderScores(){
   const sorted=[...S.players].sort((a,b)=>b.score-a.score);
   $("scores").innerHTML="";
@@ -535,17 +666,15 @@ function renderScores(){
     $("scores").appendChild(d);
   });
 }
-$("btn-scores").onclick=()=>{ backTo="s-choose"; renderScores(); show("s-scores"); };
-$("btn-back").onclick=()=>show(backTo);
-$("btn-restart").onclick=()=>{ stopTimer(); show("s-setup"); };
+$("btn-restart").onclick=()=>{ stopTimer(); clearInterval(S.clock); show("s-setup"); };
 
 if(tg?.BackButton) tg.BackButton.onClick(()=>{
   if(GP.id) return closeGame();
   const active=document.querySelector(".screen.active").id;
   stopTimer();
   if(active==="s-task") show("s-choose");
-  else if(active==="s-scores") show(backTo);
-  else if(active==="s-choose") show("s-setup");
+  else if(active==="s-final") show("s-setup");
+  else if(active==="s-choose") $("btn-finish").click();
 });
 
 /* ---------- Мини-игры: анимированные инструкции ---------- */
@@ -680,6 +809,7 @@ const saved=store.get("names",["",""]);
 const tgName=tg?.initDataUnsafe?.user?.first_name;
 if(!saved[0] && tgName) saved[0]=tgName;
 $("name1").value=saved[0]||""; $("name2").value=saved[1]||"";
+S.minutes=store.get("minutes",20); renderDur();
 syncNames(); renderLevels();
 if(store.get("adult",false)) show("s-setup");
 </script>
