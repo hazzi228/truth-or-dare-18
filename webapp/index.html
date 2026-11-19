@@ -842,7 +842,7 @@ $("btn-start").onclick = () => {
   S.timer=$("opt-timer").checked; S.escalate=$("opt-escalate").checked;
   S.players = names().map((n,i)=>({name:n, g:GENDERS[i], score:0, done:0, skip:0}));
   S.turn=Math.floor(Math.random()*S.players.length); S.rounds=0;
-  S.startAt=Date.now(); S.endAt=S.startAt+S.minutes*60000; S.timeUp=false; S.warned=false; S.lastLvl=0;
+  S.startAt=Date.now(); S.endAt=S.startAt+S.minutes*60000; S.timeUp=false; S.warned=false; S.lastLvl=0; S.maxLvl=0;
   startClock(); notify(); nextTurn(false);
 };
 
@@ -930,6 +930,7 @@ function openTask(kind){
   $("task-text").textContent=S.cur.text;
   $("task-who").textContent=S.players[S.turn].name;
   $("task-lvl").textContent=lvlName(S.cur.lvl);
+  S.maxLvl=Math.max(S.maxLvl||0, S.cur.lvl);
   $("timer").style.display="none";
   const isPose=String(S.cur.g||"").startsWith("pose_");
   $("btn-howto").textContent=isPose?"🖼 Схема: как это делать":"🎬 Как играть";
@@ -973,20 +974,62 @@ $("btn-timer").onclick=()=>{
 };
 
 /* ---------- Финал ---------- */
-const WISHES=[
-  "Массаж всего тела — 15 минут, без спешки.",
-  "Свидание, которое целиком планирует победитель.",
-  "Приватный танец только для победителя.",
-  "Вечер, когда победитель решает всё (в пределах ваших границ).",
-  "5 минут поцелуев там, где скажет победитель.",
-  "Совместная ванна или душ.",
-  "Повторить любое задание из сегодняшней игры — по выбору победителя.",
-  "Завтрак в постель.",
-  "Неделю будить победителя поцелуем.",
-  "Попробовать то, о чём победитель давно мечтает (если оба согласны).",
-  "Весь вечер выполнять маленькие просьбы победителя.",
-  "Наряд или образ, который выберет победитель — только для вас двоих.",
-];
+/* Желания под сыгранный режим: уровень (самый горячий, до которого дошли), длительность игры и время суток.
+   {w} — победитель, {l} — проигравший; {w:д}, {l:в}… — падежи; {m} — минуты, зависят от длины игры. */
+const WISHES={
+  1:[
+    "{l} делает {w:д} массаж плеч и спины — {m} минут.",
+    "Свидание, которое целиком планирует {w}. {l} соглашается на всё.",
+    "{l} пишет {w:д} три комплимента от руки и читает их вслух, глядя в глаза.",
+    "{l} целует {w:в} {m} раз — каждый раз туда, куда скажет {w}.",
+    "Медленный танец под песню, которую выберет {w}.",
+    "{l} приносит {w:д} завтрак в постель.",
+    "{l} неделю будит {w:в} поцелуем.",
+    "{l} {m} минут гладит {w:д} волосы и спину, пока {w} просто лежит.",
+  ],
+  2:[
+    "{l} делает {w:д} массаж всего тела с маслом — {m} минут.",
+    "Совместный душ или ванна: {l} моет {w:в} с головы до ног.",
+    "{l} {m} минут целует {w:в} там, где скажет {w}.",
+    "Приватный танец от {l:р} — одна песня, в одном белье.",
+    "{l} весь вечер ходит в том, что выберет {w}.",
+    "{w} выбирает любое задание из уровня «Горячо», а {l} выполняет его ещё раз — вдвое дольше.",
+    "{l} медленно раздевает {w:в} и целует каждый открывшийся сантиметр.",
+    "{l} отправляет {w:д} самое горячее сообщение, на какое способен(на), — прямо сейчас, сидя рядом.",
+  ],
+  3:[
+    "{l} делает стриптиз для {w:р} до полной наготы.",
+    "{m} минут {w} командует, а {l} выполняет любые команды в ваших границах.",
+    "{l} ласкает {w:в} {m} минут так, как скажет {w}.",
+    "Ночь в образе, который выберет {w}: бельё, роль, игра.",
+    "{l} делает {w:д} массаж всего тела без одежды — {m} минут, и руки опускаются всё ниже.",
+    "Повтор самого горячего действия сегодняшней игры — вдвое дольше.",
+    "{w} завязывает {l:д} глаза на {m} минут и делает всё, что захочет.",
+    "{l} рассказывает {w:д} свою самую откровенную фантазию — и вы пробуете кусочек.",
+  ],
+  4:[
+    "Секс в позе, которую выберет {w}, — {m} минут, и темп тоже задаёт {w}.",
+    "{l} ласкает {w:в} ртом, пока {w} не скажет «хватит».",
+    "{w} связывает {l:д} руки на {m} минут и делает всё, что хочет, в ваших границах.",
+    "{l} ласкает себя перед {w:т} до самого конца, а {w} только смотрит.",
+    "{l} {m} минут полностью во власти {w:р}: позы, темп, команды.",
+    "{l} доводит {w:в} до края три раза и останавливается — на четвёртый можно.",
+    "Секс там, где скажет {w} (в пределах дома), — прямо сейчас.",
+    "{w} выбирает любую позу из игры, и вы пробуете её ещё раз — без таймера.",
+  ],
+};
+// Когда исполнить — по времени суток
+const WISH_WHEN=h=> h>=22||h<5 ? ["Прямо сейчас, пока не уснули.","Сейчас — или утром, как только проснётесь."]
+  : h<12 ? ["Сегодня вечером. Весь день можно думать об этом.","Сегодня вечером — {w} напомнит одним сообщением."]
+  : h<18 ? ["Сегодня вечером, когда никуда не надо.","Вечером — а пока {l} ходит «в долгу»."]
+  : ["Прямо сейчас — вечер только начинается.","Сразу после игры, не откладывая."];
+const PARTS=["ночь","утро","день","вечер"];
+const partOfDay=h=> h>=22||h<5 ? 0 : h<12 ? 1 : h<18 ? 2 : 3;
+function wishText(t,w,l,m){
+  return t.replace(/\{([wl])(?::([рдвтп]))?\}/g,(_,who,c)=>{ const P=who==="w"?w:l; return c?decline(P.name,c,P.g==="f"):P.name; })
+          .replace(/\{m\}/g,m)
+          .replace(/способен\(на\)/g, l.g==="f"?"способна":"способен");
+}
 function finishGame(){
   stopTimer(); clearInterval(S.clock); S.timeUp=true;
   const [a,b]=S.players;
@@ -1018,8 +1061,28 @@ function confetti(){
   }
 }
 $("btn-idea").onclick=()=>{
-  const el=$("f-idea"); let t; do{ t=WISHES[Math.floor(Math.random()*WISHES.length)]; }while(t===el.textContent && WISHES.length>1);
-  el.textContent="💡 "+t; el.style.display="block"; haptic();
+  const el=$("f-idea");
+  const [a,b]=S.players;
+  let w = a.score===b.score ? (Math.random()<.5?a:b) : (a.score>b.score ? a : b);
+  const l = w===a ? b : a;
+  const lvl=Math.max(1,Math.min(4,S.maxLvl||S.level||1));
+  const played=Math.max(1,Math.round(Math.min(Date.now(),S.endAt)-S.startAt)/60000|0);
+  const m = played<8 ? 5 : played<15 ? 10 : 15;          // чем дольше играли — тем дольше желание
+  const h=new Date().getHours();
+  // 75% — из самого горячего уровня, до которого дошли, 25% — на уровень мягче
+  const pickLvl = lvl>1 && Math.random()<.25 ? lvl-1 : lvl;
+  const list=WISHES[pickLvl];
+  let t, guard=0;
+  do{ t=wishText(list[Math.floor(Math.random()*list.length)],w,l,m); }while(el.dataset.last===t && guard++<10);
+  el.dataset.last=t;
+  const whenArr=WISH_WHEN(h), when=wishText(whenArr[Math.floor(Math.random()*whenArr.length)],w,l,m);
+  el.innerHTML="";
+  const ctx=document.createElement("small"); ctx.style.cssText="display:block;color:var(--muted);font-weight:500;margin-bottom:6px";
+  ctx.textContent=`Под вашу игру: ${played} мин, ${lvlName(lvl)}, сейчас ${PARTS[partOfDay(h)]}`;
+  const main=document.createElement("span"); main.textContent="💡 "+t;
+  const wh=document.createElement("small"); wh.style.cssText="display:block;color:var(--accent2);margin-top:6px";
+  wh.textContent="🕒 "+when;
+  el.append(ctx,main,wh); el.style.display="block"; haptic();
 };
 $("btn-finish").onclick=()=>{
   const go=ok=>{ if(ok) finishGame(); };

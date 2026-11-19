@@ -1,5 +1,5 @@
 // Офлайн-режим: сначала сеть (чтобы всегда была свежая версия), без сети — из кэша.
-const CACHE = "tod18-v7";
+const CACHE = "tod18-v8";
 const FILES = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
