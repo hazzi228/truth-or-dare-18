@@ -93,6 +93,11 @@
   .sex button[data-g="m"].sel{border-color:#5b9dff;background:#16284a;color:#8fc0ff}
   .sex button[data-g="f"].sel{border-color:var(--accent);background:#3a1433;color:#ff8ab8}
 
+  #btn-start.off{opacity:.55}
+  .need{animation:need .6s ease 2}
+  @keyframes need{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .sex.need button{border-color:var(--accent2)}
+
   /* ---- Подсказка установки ---- */
   .install{display:none;gap:10px;align-items:center;background:var(--card2);border:1px solid #ffc94a55;border-radius:16px;padding:12px 14px;font-size:14px;line-height:1.4;color:var(--text)}
   .install.on{display:flex}
@@ -260,7 +265,7 @@
         <span class="switch"><input type="checkbox" id="opt-escalate"><span></span></span></label>
     </div>
     <div class="spacer"></div>
-    <button class="btn" id="btn-start" disabled>Начать</button>
+    <button class="btn" id="btn-start">Начать</button>
   </section>
 
   <!-- 3. Choose -->
@@ -819,10 +824,20 @@ function syncNames(){
   const sexOk = GENDERS[0] && GENDERS[1];
   $("sex-hint").style.color = sexOk ? "" : "var(--accent2)";
   $("sex-hint").style.display = sexOk ? "none" : "block";
-  $("btn-start").disabled = !a || !b || a.toLowerCase()===b.toLowerCase() || !sexOk;
+  $("btn-start").classList.toggle("off", !!startProblem());
   store.set("names",[a,b]);
 }
 $("name1").oninput = $("name2").oninput = syncNames;
+// Что мешает начать (null — всё готово)
+function startProblem(){
+  const [a,b]=names();
+  if(!a) return ["name1","Впишите имя первого игрока"];
+  if(!b) return ["name2","Впишите имя второго игрока"];
+  if(a.toLowerCase()===b.toLowerCase()) return ["name2","Имена должны быть разными"];
+  if(!GENDERS[0]) return ["sex0","Выберите пол: "+a+" — ♂ или ♀"];
+  if(!GENDERS[1]) return ["sex1","Выберите пол: "+b+" — ♂ или ♀"];
+  return null;
+}
 $("name1").addEventListener("keydown", e=>{ if(e.key==="Enter") $("name2").focus(); });
 
 function renderLevels(){
@@ -839,6 +854,15 @@ function renderDur(){ [...$("dur").children].forEach(b=>b.classList.toggle("sel"
 [...$("dur").children].forEach(b=>b.onclick=()=>{ S.minutes=+b.dataset.m; store.set("minutes",S.minutes); haptic(); renderDur(); });
 
 $("btn-start").onclick = () => {
+  const bad=startProblem();
+  if(bad){
+    const el = bad[0].startsWith("sex") ? document.querySelector(`.sex[data-i="${bad[0][3]}"]`) : $(bad[0]);
+    toast("⚠️ "+bad[1]); notify("error");
+    el.scrollIntoView({behavior:"smooth",block:"center"});
+    el.classList.remove("need"); void el.offsetWidth; el.classList.add("need");
+    if(el.tagName==="INPUT") el.focus();
+    return;
+  }
   S.timer=$("opt-timer").checked; S.escalate=$("opt-escalate").checked;
   S.players = names().map((n,i)=>({name:n, g:GENDERS[i], score:0, done:0, skip:0}));
   S.turn=Math.floor(Math.random()*S.players.length); S.rounds=0;
@@ -1221,7 +1245,7 @@ function fig(c,P){
   const pts=a=>a.map(q=>q.join(",")).join(" ");
   const seg=(a,w,o=1)=>`<g opacity="${o}"><polyline points="${pts(a)}" fill="none" stroke="${OUT}" stroke-width="${w+5}" stroke-linecap="round" stroke-linejoin="round"/>`+
     `<polyline points="${pts(a)}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`+
-    `<circle cx="${a.at(-1)[0]}" cy="${a.at(-1)[1]}" r="${w*.55}" fill="${c}" stroke="${OUT}" stroke-width="2"/></g>`;
+    `<circle cx="${a[a.length-1][0]}" cy="${a[a.length-1][1]}" r="${w*.55}" fill="${c}" stroke="${OUT}" stroke-width="2"/></g>`;
   const [hx,hy]=P.h, [dx,dy]=P.d||[0,-1], n=Math.hypot(dx,dy)||1, ux=dx/n, uy=dy/n;
   const head=`<circle cx="${hx}" cy="${hy}" r="13.5" fill="${c}" stroke="${OUT}" stroke-width="2.5"/>`+
     `<circle cx="${hx+ux*13}" cy="${hy+uy*13}" r="4" fill="${c}" stroke="${OUT}" stroke-width="2"/>`+
