@@ -83,6 +83,14 @@
   .rules li{margin:6px 0;color:var(--muted)}
   .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#000c;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
   .toast.show{opacity:1}
+  /* ---- Выбор пола ---- */
+  .nm{align-items:center}
+  .nm input{min-width:0}
+  .row>.sex{flex:none;display:flex;gap:6px}
+  .sex button{width:48px;height:48px;border-radius:14px;border:2px solid transparent;background:var(--card2);color:var(--muted);font-size:22px;font-weight:700;cursor:pointer;transition:.15s}
+  .sex button[data-g="m"].sel{border-color:#5b9dff;background:#16284a;color:#8fc0ff}
+  .sex button[data-g="f"].sel{border-color:var(--accent);background:#3a1433;color:#ff8ab8}
+
   /* ---- Подсказка установки ---- */
   .install{display:none;gap:10px;align-items:center;background:var(--card2);border:1px solid #ffc94a55;border-radius:16px;padding:12px 14px;font-size:14px;line-height:1.4;color:var(--text)}
   .install.on{display:flex}
@@ -217,8 +225,15 @@
   <!-- 2. Setup -->
   <section class="screen" id="s-setup">
     <h2>Кто играет?</h2>
-    <input type="text" id="name1" maxlength="20" placeholder="Имя первого игрока" autocomplete="off" style="flex:none">
-    <input type="text" id="name2" maxlength="20" placeholder="Имя второго игрока" autocomplete="off" style="flex:none">
+    <div class="row nm">
+      <input type="text" id="name1" maxlength="20" placeholder="Имя первого игрока" autocomplete="off">
+      <div class="sex" data-i="0"><button data-g="m" aria-label="Мужской">♂</button><button data-g="f" aria-label="Женский">♀</button></div>
+    </div>
+    <div class="row nm">
+      <input type="text" id="name2" maxlength="20" placeholder="Имя второго игрока" autocomplete="off">
+      <div class="sex" data-i="1"><button data-g="m" aria-label="Мужской">♂</button><button data-g="f" aria-label="Женский">♀</button></div>
+    </div>
+    <p id="sex-hint" style="font-size:13px">Выберите пол — задания будут обращаться к каждому правильно.</p>
 
     <h2 style="margin-top:6px">Уровень</h2>
     <div class="levels" id="levels"></div>
@@ -394,7 +409,7 @@ const TASKS = {
       {t:"Угадай поцелуй: завяжи глаза — {p} целует тебя 3 раза в разные места (кроме интимных), а ты угадываешь, куда будет следующий.", g:"blindkiss"},
       "Укуси {p:в} за мочку уха.",
       "Покажи свою любимую позу (в одежде) с подушкой.",
-      {t:"Лёд: 30 секунд води кубиком льда по шее и ключице {p:р}. {p} не должен(на) дёргаться.", g:"ice"},
+      {t:"Лёд: 30 секунд води кубиком льда по шее и ключице {p:р}. {p} не {п:должен(на)} дёргаться.", g:"ice"},
       {t:"Корона: следующие 3 минуты {p} командует, а ты выполняешь (выше пояса, в пределах ваших границ).", g:"boss"},
       {t:"7 минут в раю (мягкая версия): приглушите свет, таймер на 7 минут — только поцелуи и объятия.", g:"paradise"},
       "Слизни что-нибудь сладкое с руки {p:р}.",
@@ -493,7 +508,7 @@ const TASKS_EXTRA = {
     truth: [
       "Где тебе больше всего нравится, когда {p} тебя целует?",
       "Какая твоя самая частая фантазия о {p:п}?",
-      "Что бы ты хотел(а), чтобы {p} делал(а) в постели чаще?",
+      "Что бы ты хотел(а), чтобы {p} {п:делал(а)} в постели чаще?",
       "Ваш самый запоминающийся секс — и почему именно он?",
       "Тебе нравится, когда {p} говорит тебе пошлости? Какие?",
       "В каком белье ты больше всего хочешь увидеть {p:в}?",
@@ -507,9 +522,9 @@ const TASKS_EXTRA = {
       "Опиши свою идеальную прелюдию — по шагам.",
       "Есть игрушка или вещь, которую ты хочешь попробовать с {p:т}?",
       "Тебя когда-нибудь возбуждало одно-единственное сообщение {p:р}?",
-      "Какую часть своего тела ты хочешь, чтобы {p} целовал(а) чаще?",
+      "Какую часть своего тела ты хочешь, чтобы {p} {п:целовал(а)} чаще?",
       "Утро или ночь? Убеди {p:в} в своём выборе.",
-      "Что ты хочешь, чтобы {p} сделал(а) с тобой сегодня после игры?",
+      "Что ты хочешь, чтобы {p} {п:сделал(а)} с тобой сегодня после игры?",
       "Когда ты в последний раз думал(а) о {p:п} и тебе стало жарко?",
     ],
     dare: [
@@ -532,7 +547,7 @@ const TASKS_EXTRA = {
       "Укуси {p:в} за плечо — нежно, но ощутимо.",
       "Прижмись к {p:д} всем телом и замри на 30 секунд.",
       "Поцелуй внутреннюю сторону бедра {p:р} (поверх одежды) — 10 секунд.",
-      "Станцуй для {p:р} так, чтобы он(а) захотел(а) тебя прямо сейчас — 40 секунд.",
+      "Станцуй для {p:р} так, чтобы он(а) {п:захотел(а)} тебя прямо сейчас — 40 секунд.",
       "Покажи на себе руками, как ты любишь, чтобы тебя трогали.",
       "Сними одну вещь с себя и одну с {p:р}.",
     ],
@@ -543,9 +558,9 @@ const TASKS_EXTRA = {
       "Какая самая грязная мысль о {p:п} приходила тебе в голову?",
       "Что ты больше всего любишь, когда {p} ласкает тебя ртом?",
       "Какую позу ты хочешь попробовать с {p:т}, но ещё не предлагал(а)?",
-      "Что {p} должен(на) делать в момент твоего оргазма?",
+      "Что {p} {п:должен(на)} делать в момент твоего оргазма?",
       "Тебя заводят шлепки? Насколько сильные?",
-      "Хочешь, чтобы {p} связал(а) тебя? Или наоборот?",
+      "Хочешь, чтобы {p} {п:связал(а)} тебя? Или наоборот?",
       "Какую пошлую фразу ты хочешь услышать от {p:р} во время секса?",
       "Что самое смелое ты готов(а) сделать с {p:т} вне дома?",
       "Какую ролевую игру ты хочешь разыграть с {p:т} — кто ты, кто он(а)?",
@@ -605,12 +620,12 @@ TASKS[4] = {
     "Что тебя больше всего заводит в голом теле {p:р}?",
     "Где вне дома ты решился(ась) бы заняться сексом с {p:т}?",
     "Анальные ласки: да, нет или «хочу попробовать»?",
-    "Хочешь, чтобы {p} использовал(а) на тебе игрушку? Какую?",
+    "Хочешь, чтобы {p} {п:использовал(а)} на тебе игрушку? Какую?",
     "Тебе нравится жёстче или нежнее? Насколько жёстче?",
-    "Что {p} должен(на) шептать тебе, когда ты вот-вот кончишь?",
+    "Что {p} {п:должен(на)} шептать тебе, когда ты вот-вот кончишь?",
     "Секс с завязанными глазами: твоими или {p:р}?",
-    "Какую самую пошлую вещь ты хочешь, чтобы {p} сделал(а) с тобой?",
-    "Где на твоём теле {p} ещё ни разу не целовал(а), а ты хочешь?",
+    "Какую самую пошлую вещь ты хочешь, чтобы {p} {п:сделал(а)} с тобой?",
+    "Где на твоём теле {p} ещё ни разу не {п:целовал(а)}, а ты хочешь?",
     "Хотел(а) бы ты снять с {p:т} откровенное видео только для вас двоих?",
     "Дай {p:д} пошаговую инструкцию: как возбудить тебя быстрее всего?",
     "Опиши словами свой оргазм с {p:т}.",
@@ -618,7 +633,7 @@ TASKS[4] = {
     "Тебя заводит мысль, что {p} будет полностью управлять тобой всю ночь?",
     "Что новое ты хочешь попробовать в постели в этом месяце?",
     "Сколько минут прелюдии нужно, чтобы ты начал(а) умолять о большем?",
-    "Если бы {p} выполнил(а) любое твоё желание в постели без вопросов — что бы это было?",
+    "Если бы {p} {п:выполнил(а)} любое твоё желание в постели без вопросов — что бы это было?",
     "Какая самая грязная фраза, которую ты хочешь сказать {p:д} во время секса? Скажи её сейчас.",
     "Что ты делаешь языком, от чего {p} сходит с ума? А что хочешь попробовать?",
     "Ты любишь, когда {p} доводит тебя до края и останавливается?",
@@ -663,7 +678,7 @@ TASKS[4] = {
 
 /* ---------- Склонение имён ---------- */
 const FEM_SOFT=["нинель","адель","ассоль","рахиль","изабель","жизель","эсфирь","юдифь","любовь"];
-function decline(name, c){
+function decline(name, c, fem=null){
   if(!c || !/^[А-Яа-яЁё]+$/.test(name)) return name;
   const low=name.toLowerCase(), last=low.slice(-1), prev=low.slice(-2,-1), st=name.slice(0,-1);
   const hush="жшщчц";
@@ -673,13 +688,39 @@ function decline(name, c){
   if(last==="й") return st+{р:"я",д:"ю",в:"я",т:"ем",п:low.endsWith("ий")?"и":"е"}[c];
   if(last==="ь"){
     if(low==="любовь") return {р:"Любви",д:"Любви",в:"Любовь",т:"Любовью",п:"Любви"}[c];
-    if(FEM_SOFT.includes(low)) return st+{р:"и",д:"и",в:"ь",т:"ью",п:"и"}[c];
+    if(fem===true || (fem==null && FEM_SOFT.includes(low))) return st+{р:"и",д:"и",в:"ь",т:"ью",п:"и"}[c];
     return st+{р:"я",д:"ю",в:"я",т:"ем",п:"е"}[c];
   }
+  if(fem===true && "бвгджзклмнпрстфхцчшщ".includes(last)) return name; // Кармен, Ким — не склоняются
   if("бвгджзклмнпрстфхцчшщ".includes(last)) return name+{р:"а",д:"у",в:"а",т:hush.includes(last)?"ем":"ом",п:"е"}[c];
   return name; // несклоняемые: Арно, Кэти, латиница
 }
-const fillName=(t,name)=>t.replace(/\{p(?::([рдвтп]))?\}/g,(_,c)=>decline(name,c));
+/* ---------- Род: «хотел(а)» → «хотел» / «хотела» ---------- */
+// Формы без пометки относятся к тому, чей ход; {п:...} и местоимения он(а)/его(её)… — к партнёру.
+function gform(w, fem){
+  const m=w.match(/^(.*?)\((.+)\)$/); if(!m) return w;
+  const [,b,suf]=m;
+  if(fem==null) return w;               // пол неизвестен — оставляем «хотел(а)»
+  if(!fem) return b;
+  if(suf==="ась") return b.replace(/ся$/,"")+"ась";      // стеснялся → стеснялась
+  if(suf==="на")  return b.replace(/ен$/,"")+"на";       // должен → должна
+  if(suf==="ой")  return b.replace(/(ым|им)$/,"")+"ой";  // голым → голой
+  if(suf==="шла") return b.replace(/шёл$/,"")+"шла";     // пошёл → пошла
+  return b+suf;                                          // хотел → хотела, сам → сама
+}
+function genderize(t, meF, pF){
+  t=t.replace(/\{п:([^}]+)\}/g,(_,w)=>gform(w,pF));
+  t=t.replace(/(^|[^А-Яа-яЁё])(он|его|ему|ним|нём|него)\((а|её|ей|ней|неё)\)/g,
+    (all,pre,b,suf)=> pF==null ? all : pre+(pF ? (suf==="а" ? b+"а" : suf) : b));
+  t=t.replace(/[А-Яа-яЁё]+\((а|ась|на|ла|шла|ой)\)/g, w=>gform(w,meF));
+  return t;
+}
+const sexOf=p=> p?.g==="f" ? true : p?.g==="m" ? false : null;
+function fillName(t,name){
+  const me=S.players[S.turn], pt=S.players.find(x=>x.name===name&&x!==me);
+  const pF=sexOf(pt);
+  return genderize(t.replace(/\{p(?::([рдвтп]))?\}/g,(_,c)=>decline(name,c,pF)), sexOf(me), pF);
+}
 
 const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); try{tg.setHeaderColor("#140a14");tg.setBackgroundColor("#140a14");}catch(e){} }
@@ -709,9 +750,21 @@ $("btn-minor").onclick = () => show("s-blocked");
 
 /* ---------- Setup ---------- */
 function names(){ return [$("name1").value.trim(), $("name2").value.trim()]; }
+let GENDERS=["",""];
+function renderSex(){
+  document.querySelectorAll(".sex").forEach(box=>{
+    [...box.children].forEach(b=>b.classList.toggle("sel", GENDERS[+box.dataset.i]===b.dataset.g));
+  });
+}
+document.querySelectorAll(".sex button").forEach(b=>b.onclick=()=>{
+  GENDERS[+b.parentNode.dataset.i]=b.dataset.g; store.set("genders",GENDERS); haptic(); renderSex(); syncNames();
+});
 function syncNames(){
   const [a,b]=names();
-  $("btn-start").disabled = !a || !b || a.toLowerCase()===b.toLowerCase();
+  const sexOk = GENDERS[0] && GENDERS[1];
+  $("sex-hint").style.color = sexOk ? "" : "var(--accent2)";
+  $("sex-hint").style.display = sexOk ? "none" : "block";
+  $("btn-start").disabled = !a || !b || a.toLowerCase()===b.toLowerCase() || !sexOk;
   store.set("names",[a,b]);
 }
 $("name1").oninput = $("name2").oninput = syncNames;
@@ -732,7 +785,7 @@ function renderDur(){ [...$("dur").children].forEach(b=>b.classList.toggle("sel"
 
 $("btn-start").onclick = () => {
   S.timer=$("opt-timer").checked; S.escalate=$("opt-escalate").checked;
-  S.players = names().map(n=>({name:n, score:0, done:0, skip:0}));
+  S.players = names().map((n,i)=>({name:n, g:GENDERS[i], score:0, done:0, skip:0}));
   S.turn=Math.floor(Math.random()*S.players.length); S.rounds=0;
   S.startAt=Date.now(); S.endAt=S.startAt+S.minutes*60000; S.timeUp=false; S.warned=false; S.lastLvl=0;
   startClock(); notify(); nextTurn(false);
@@ -876,7 +929,7 @@ function finishGame(){
   if(w){
     $("f-emoji").textContent="🏆";
     $("f-title").textContent=`${w.name} побеждает!`;
-    $("f-wish-h").textContent=`👑 ${w.name} загадывает желание ${decline(l.name,"д")}`;
+    $("f-wish-h").textContent=`👑 ${w.name} загадывает желание ${decline(l.name,"д",l.g==="f")}`;
     $("f-wish").textContent=`${l.name} выполняет одно желание — сейчас или «в долг» на потом. Только то, на что вы оба согласны.`;
   } else {
     $("f-emoji").textContent="🤝";
@@ -1010,7 +1063,7 @@ const GAMES={
   ice:{ title:"Лёд",
     rules:["Возьми кубик льда (или подержи пальцы в холодной воде).",
            "Медленно веди им по шее, ключице и плечу {p:р} — 30 секунд.",
-           "{p} должен(на) не дёргаться и не смеяться. Не выдержал(а) — ещё 10 секунд.",
+           "{p} {п:должен(на)} не дёргаться и не смеяться. Не {п:выдержал(а)} — ещё 10 секунд.",
            "Капли можно собрать губами 😉"],
     scenes:[
       {c:"Возьми кубик льда", s:()=>at(160,96,`<rect x="-30" y="-30" width="60" height="60" rx="12" fill="#bfe9ff" opacity=".85" stroke="#fff" stroke-width="2"/><path d="M-18 -18 h18" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".8"/>`,"k-in")+sparks()+
@@ -1066,6 +1119,7 @@ const tgName=tg?.initDataUnsafe?.user?.first_name;
 if(!saved[0] && tgName) saved[0]=tgName;
 $("name1").value=saved[0]||""; $("name2").value=saved[1]||"";
 S.minutes=store.get("minutes",20); renderDur();
+GENDERS=store.get("genders",["",""]); renderSex();
 syncNames(); renderLevels();
 if(store.get("adult",false)) show("s-setup");
 </script>
